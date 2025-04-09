@@ -2,14 +2,19 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import re
+import locale
 
-# Custom Indian-style currency formatter
+# Set locale for formatting
+try:
+    locale.setlocale(locale.LC_ALL, 'en_IN')
+except:
+    locale.setlocale(locale.LC_ALL, '')
+
 def format_inr(value):
-    s, *d = str(f"{value:,.2f}").partition(".")
-    r = ",".join(reversed([s[max(i - 2, 0):i] for i in range(len(s), 0, -2)][::-1]))
-    r = re.sub(r"^(\d+),", lambda m: m.group(1)[::-1].replace(",", "")[::-1] + ",", r, 1)
-    return f"₹{r}.{''.join(d)}"
+    try:
+        return locale.currency(value, grouping=True, symbol=True)
+    except:
+        return f"₹{value:,.2f}"
 
 def calculate_amortization_schedule(loan_amount, annual_interest_rate, tenure_years, extra_payment=0):
     monthly_interest_rate = (annual_interest_rate / 100) / 12
@@ -54,18 +59,10 @@ st.title("🏡 Home Loan EMI Calculator")
 
 with st.sidebar:
     st.header("Loan Parameters")
-
-    loan_amount = st.number_input("Loan Amount (₹)", value=5000000, step=100000)
-    st.caption(f"**Entered:** {format_inr(loan_amount)}")
-
+    loan_amount = st.number_input("Loan Amount (₹)", value=5000000, step=50000)
     annual_interest_rate = st.number_input("Annual Interest Rate (%)", value=8.5, step=0.1)
-
     tenure_years = st.number_input("Loan Tenure (Years)", value=20, step=1)
-
     extra_payment = st.number_input("Extra Monthly Payment (₹)", value=0, step=1000)
-    if extra_payment:
-        st.caption(f"**Extra Payment:** {format_inr(extra_payment)}")
-
     calculate = st.button("Calculate EMI")
 
 if calculate:
