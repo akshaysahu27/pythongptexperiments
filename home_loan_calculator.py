@@ -54,7 +54,7 @@ def calculate_amortization_schedule(loan_amount, annual_interest_rate, tenure_ye
     return round(emi, 2), round(total_payment, 2), round(total_interest, 2), pd.DataFrame(schedule)
 
 # Streamlit App
-st.set_page_config(page_title="Home Loan Calculator", layout="wide")
+st.set_page_config(page_title="Home Loan Calculator by Akshay", layout="wide")
 st.title("🏡 Home Loan EMI Calculator")
 
 with st.sidebar:
